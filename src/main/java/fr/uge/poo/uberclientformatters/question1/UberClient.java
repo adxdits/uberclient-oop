@@ -80,29 +80,14 @@ public class UberClient {
 
     }
 
-    public String toHTML() {
-        var averageGrade= grades.stream().mapToLong(l -> l).average().orElseThrow(() -> new AssertionError("Client are meant to have at least one grade"));
-        return String.format("<h2>%s %s  (%1.2f*)</h2>",firstName,lastName,averageGrade);
+    private UberClientInfo getInfos(){
+        return new UberClientInfo(firstName, lastName, emails, grades);
     }
 
-    public String toHTMWithAverageOverLast7Grades() {
-        var averageGrade= grades.stream().limit(7).mapToLong(l -> l).average().orElseThrow(() -> new AssertionError("Client are meant to have at least one grade"));
-        return String.format("<h2>%s %s  (%1.2f*)</h2>",firstName,lastName,averageGrade);
+    public String export(UberClientFormatter formatter){
+        return formatter.format(getInfos());
     }
 
-    public String toHTMLSimple() {
-        return String.format("<h2>%s %s </h2>",firstName,lastName);
-    }
-
-    public String toHtmlWithEmails() {
-            var averageGrade = grades.stream().mapToLong(l -> l).average().orElseThrow(() -> new AssertionError("Client are meant to have at least one grade"));
-            return String.format("<h2>%s %s (%1.2f*) : %s </h2>",firstName,lastName,averageGrade,emails);
-    }
-
-    public String toHtmlWithEmailsAndAverageOverLast5Grades() {
-        var averageGrade= grades.stream().limit(5).mapToLong(l -> l).average().orElseThrow(() -> new AssertionError("Client are meant to have at least one grade"));
-        return String.format("<h2>%s %s (%1.2f*) : %s </h2>",firstName,lastName,averageGrade,emails);
-    }
     private static UberClientBuilder with() {
         return new UberClientBuilder();
     }
@@ -130,12 +115,16 @@ public class UberClient {
                 .phoneNumber("07070707070707")
                 .build();
 
-        System.out.println(arnaud.toHTML());
-        System.out.println(arnaud.toHTMLSimple());
-        System.out.println(arnaud.toHTMWithAverageOverLast7Grades());
-        System.out.println(arnaud.toHtmlWithEmails());
-        System.out.println(arnaud.toHtmlWithEmailsAndAverageOverLast5Grades());
+        UberClientFormatter htmlFormatter = new HTMLFormat();
+        UberClientFormatter htmlSimpleFormatter = new HTMLSimpleFormat();
+        UberClientFormatter htmlWithEmailsFormatter = new HTMLWithEmailsFormat();
+        UberClientFormatter htmlWithEmailsAndAverageOverLast5GradesFormatter = new HtmlWithEmailsAndAverageOverLast5GradesFormat();
+
+        System.out.println(arnaud.export(htmlFormatter));
+        System.out.println(arnaud.export(htmlSimpleFormatter));
+        System.out.println(arnaud.export(new HTMWithAverageOverLast7GradesFormat()));
+        System.out.println(arnaud.export(htmlWithEmailsFormatter));
+        System.out.println(arnaud.export(htmlWithEmailsAndAverageOverLast5GradesFormatter));
     }
 }
-
 
